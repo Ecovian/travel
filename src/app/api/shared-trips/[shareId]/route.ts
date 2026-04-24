@@ -10,14 +10,25 @@ type RouteContext = {
 };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const { shareId } = await context.params;
-  const record = await getSharedTrip(shareId);
+  try {
+    const { shareId } = await context.params;
+    const record = await getSharedTrip(shareId);
 
-  if (!record) {
-    return NextResponse.json({ message: "공유 여행을 찾을 수 없습니다." }, { status: 404 });
+    if (!record) {
+      return NextResponse.json({ message: "공유 여행을 찾을 수 없습니다." }, { status: 404 });
+    }
+
+    return NextResponse.json(record);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "공유 여행을 불러오지 못했습니다.";
+
+    return NextResponse.json(
+      {
+        message,
+      },
+      { status: message.includes("공유 DB") ? 503 : 400 },
+    );
   }
-
-  return NextResponse.json(record);
 }
 
 export async function PUT(request: Request, context: RouteContext) {
@@ -32,11 +43,13 @@ export async function PUT(request: Request, context: RouteContext) {
 
     return NextResponse.json(record);
   } catch (error) {
+    const message = error instanceof Error ? error.message : "공유 여행을 저장하지 못했습니다.";
+
     return NextResponse.json(
       {
-        message: error instanceof Error ? error.message : "공유 여행을 저장하지 못했습니다.",
+        message,
       },
-      { status: 400 },
+      { status: message.includes("공유 DB") ? 503 : 400 },
     );
   }
 }

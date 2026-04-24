@@ -33,7 +33,9 @@ export function SharedTripPageClient({ shareId }: SharedTripPageClientProps) {
       });
 
       if (!response.ok) {
-        throw new Error("공유 여행을 찾을 수 없습니다.");
+        const payload = (await response.json().catch(() => undefined)) as { message?: string } | undefined;
+
+        throw new Error(payload?.message || "공유 여행을 찾을 수 없습니다.");
       }
 
       const record = (await response.json()) as SharedTripRecord;
@@ -61,7 +63,9 @@ export function SharedTripPageClient({ shareId }: SharedTripPageClientProps) {
       });
 
       if (!response.ok) {
-        throw new Error("공유 여행을 저장하지 못했습니다.");
+        const payload = (await response.json().catch(() => undefined)) as { message?: string } | undefined;
+
+        throw new Error(payload?.message || "공유 여행을 저장하지 못했습니다.");
       }
 
       const record = (await response.json()) as SharedTripRecord;

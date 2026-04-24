@@ -30,7 +30,7 @@
 - 지도 타일은 OpenStreetMap, 장소 검색은 Nominatim, 경로 계산은 OSRM 공개 API를 사용합니다.
 - API 키는 필요하지 않습니다.
 - 외부 지도/검색/경로 API가 연결되지 않는 환경에서도 기본 장소 데이터와 오프라인 핀 지도로 위치와 직선 거리를 확인할 수 있습니다.
-- 공유 링크는 로컬 Next 서버의 `.data/shared-trips.json`에 저장됩니다.
-- 다른 사람이 공유 링크를 열려면 이 앱이 실행 중인 서버 주소에 접근할 수 있어야 합니다. `localhost` 링크는 같은 컴퓨터에서만 열립니다.
+- 공유 링크는 로컬 개발에서는 `.data/shared-trips.json`에 저장되고, Vercel 배포 환경에서는 Upstash Redis REST 환경변수(`KV_REST_API_URL`, `KV_REST_API_TOKEN` 또는 `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`)가 필요합니다.
+- Vercel에서 다른 사람이 공유 링크를 함께 수정하려면 Vercel Marketplace에서 Upstash Redis를 프로젝트에 연결한 뒤 다시 배포해야 합니다.
 - 공개 API는 프로덕션 대량 트래픽용 인프라가 아니므로 서비스 규모가 커지면 자체 Nominatim/OSRM 서버나 전용 제공자를 붙이는 구조로 확장하는 편이 좋습니다.
 - 같은 브라우저 기준으로 최근 여행과 저장된 일정이 유지됩니다.

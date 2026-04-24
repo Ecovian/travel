@@ -15,9 +15,11 @@ export function TripPlannerPageClient({ tripId }: TripPlannerPageClientProps) {
   const trip = findTrip(tripId);
   const [shareUrl, setShareUrl] = useState("");
   const [shareStatus, setShareStatus] = useState<"idle" | "creating" | "ready" | "error">("idle");
+  const [shareErrorMessage, setShareErrorMessage] = useState("");
 
   const createShareLink = async (currentTrip: Trip) => {
     setShareStatus("creating");
+    setShareErrorMessage("");
 
     try {
       const response = await fetch("/api/shared-trips", {
@@ -29,7 +31,9 @@ export function TripPlannerPageClient({ tripId }: TripPlannerPageClientProps) {
       });
 
       if (!response.ok) {
-        throw new Error("공유 링크를 만들지 못했습니다.");
+        const payload = (await response.json().catch(() => undefined)) as { message?: string } | undefined;
+
+        throw new Error(payload?.message || "공유 링크를 만들지 못했습니다.");
       }
 
       const record = (await response.json()) as { id: string };
@@ -38,8 +42,9 @@ export function TripPlannerPageClient({ tripId }: TripPlannerPageClientProps) {
       setShareUrl(nextShareUrl);
       setShareStatus("ready");
       await navigator.clipboard?.writeText(nextShareUrl).catch(() => undefined);
-    } catch {
+    } catch (error) {
       setShareStatus("error");
+      setShareErrorMessage(error instanceof Error ? error.message : "공유 링크를 만들지 못했습니다.");
     }
   };
 
@@ -90,8 +95,11 @@ export function TripPlannerPageClient({ tripId }: TripPlannerPageClientProps) {
             </span>
           ) : null}
           {shareStatus === "error" ? (
-            <span className="rounded-full bg-[rgba(255,134,71,0.14)] px-3 py-2 text-xs font-semibold text-[rgba(146,75,35,0.92)]">
-              공유 실패
+            <span
+              className="rounded-full bg-[rgba(255,134,71,0.14)] px-3 py-2 text-xs font-semibold text-[rgba(146,75,35,0.92)]"
+              title={shareErrorMessage}
+            >
+              {shareErrorMessage || "공유 실패"}
             </span>
           ) : null}
         </div>
