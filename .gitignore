@@ -1,0 +1,13 @@
+.next
+node_modules
+dist
+coverage
+*.tsbuildinfo
+.data
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+next-dev.*.log
+pnpm-lock.yaml
